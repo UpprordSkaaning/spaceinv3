@@ -46,7 +46,7 @@ public class SI {
     private static final Random rand = new Random();
 
     // TODO More references here
-    private final Gun gun= new Gun();
+    private final Gun gun = new Gun();
 
 
     private final List<Positionable> shipBombs = new ArrayList<>();
@@ -104,6 +104,7 @@ public class SI {
             } else {
                 for (AbstractShip ship : allShips) {
                     if (gunProjectile.collides(ship)) {
+                        EventBus.INSTANCE.publish(new ModelEvent(ModelEvent.Type.GUN_HIT_SHIP, ship));
                         gunProjectile = null;
                         points += ship.getValue();
                         allShips.remove(ship);
@@ -139,6 +140,7 @@ public class SI {
         for(Positionable bomb : shipBombs) {
             bomb.move();
             if(bomb.collides(theGround)) {
+                EventBus.INSTANCE.publish(new ModelEvent(ModelEvent.Type.BOMB_HIT_GROUND, bomb));
                 toRemove.add(bomb);
                 continue;
             }
@@ -148,7 +150,7 @@ public class SI {
                 continue;
             }
             if(bomb.collides(gun)) {
-                System.out.println("GAME OVER!");
+                EventBus.INSTANCE.publish(new ModelEvent(ModelEvent.Type.BOMB_HIT_GUN,gun));
             }
         }
         shipBombs.removeAll(toRemove);
@@ -170,6 +172,7 @@ public class SI {
 
     public void fireGun() {
         if(gunProjectile == null) {
+            EventBus.INSTANCE.publish(new ModelEvent(ModelEvent.Type.GUN_SHOOT,gun));
             gunProjectile = gun.fire();
         }
     }
